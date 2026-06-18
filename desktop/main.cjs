@@ -14,8 +14,11 @@ const {
   openAccessibilitySettings,
   requestAccessibilityAccess,
 } = require("./services/accessibility-service.cjs");
+const { startNextServer, stopNextServer } = require("./next-server.cjs");
 
-const APP_URL = process.env.ELECTRON_APP_URL || serverConfig.APP_URL;
+function getAppUrl() {
+  return process.env.ELECTRON_APP_URL || serverConfig.APP_URL;
+}
 
 const IPHONE_WIDTH = 393;
 const IPHONE_HEIGHT = 852;
@@ -204,7 +207,7 @@ function createMainWindow() {
     mainWindow.setWindowButtonVisibility(false);
   }
 
-  mainWindow.loadURL(APP_URL);
+  mainWindow.loadURL(getAppUrl());
 
   mainWindow.once("ready-to-show", () => {
     applyScreenshotProtection();
@@ -453,11 +456,22 @@ function bootstrap() {
   registerGlobalShortcuts();
 }
 
-app.whenReady().then(bootstrap);
+app.whenReady().then(async () => {
+  try {
+    if (app.isPackaged) {
+      await startNextServer(serverConfig.PORT || 4000);
+    }
+    bootstrap();
+  } catch (err) {
+    console.error("[DeskFlow] Failed to start:", err);
+    app.quit();
+  }
+});
 
 app.on("before-quit", () => {
   app.isQuitting = true;
   globalShortcut.unregisterAll();
+  stopNextServer();
   timerService?.destroy();
   backgroundService?.stop();
   keepAliveService?.destroy();
