@@ -74,6 +74,8 @@ git push origin v0.1.0
 
 GitHub Actions builds macOS and Windows installers and attaches them to the release automatically.
 
+See **[docs/RELEASING.md](./docs/RELEASING.md)** for manual upload steps (fastest way to publish v0.1.0).
+
 ## Configuration
 
 - Timer defaults: `config/timer.json`
