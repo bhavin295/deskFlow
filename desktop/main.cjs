@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, shell, nativeImage, screen, Notification, globalShortcut } = require("electron");
 const path = require("node:path");
 const fs = require("node:fs");
+const serverConfig = require(path.join(__dirname, "..", "config", "server.json"));
 const { BackgroundService } = require("./services/background-service.cjs");
 const { TimerService, COUNTDOWN_START } = require("./timer-service.cjs");
 const { createTray, destroyTray, refreshTrayFromApp } = require("./tray.cjs");
@@ -14,7 +15,7 @@ const {
   requestAccessibilityAccess,
 } = require("./services/accessibility-service.cjs");
 
-const APP_URL = process.env.ELECTRON_APP_URL || "http://localhost:4000";
+const APP_URL = process.env.ELECTRON_APP_URL || serverConfig.APP_URL;
 
 const IPHONE_WIDTH = 393;
 const IPHONE_HEIGHT = 852;

@@ -4,27 +4,12 @@ import type { ReactNode } from "react";
 import { useTracker } from "@/context/TrackerContext";
 import TimerBuddy from "@/components/animations/TimerBuddy";
 import TimerRingArt from "@/components/animations/TimerRingArt";
+import { formatElapsed, formatMmSs } from "@/lib/timeFormat";
 
 const RING_SIZE = 212;
 const RING_STROKE = 5;
 const RING_RADIUS = (RING_SIZE - RING_STROKE) / 2;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
-
-function formatElapsed(totalSeconds: number): string {
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-  if (hours > 0) {
-    return `${hours}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-  }
-  return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-}
-
-function formatTime(totalSeconds: number): string {
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-}
 
 function ProgressRing({
   progress,
@@ -119,7 +104,7 @@ export default function TimerPanel() {
             {formatElapsed(elapsedSeconds)}
           </p>
           {isRunning ? (
-            <p className="timer-sub timer-sub-hero">Next in {formatTime(nextAlertSeconds)}</p>
+            <p className="timer-sub timer-sub-hero">Next in {formatMmSs(nextAlertSeconds)}</p>
           ) : (
             <p className="timer-sub timer-sub-idle">Start tracking in DeskQ</p>
           )}

@@ -84,29 +84,38 @@ tracker-alert/
 │   ├── games/              # Snake, Memory, Reaction
 │   ├── wellness/           # Breathing, Eye Rest, Stretch
 │   ├── svg/                # Icons and logos
-│   ├── IPhoneShell.tsx     # iPhone frame + layout shell
-│   ├── TimerPanel.tsx      # Circular progress timer
-│   ├── StatusCard.tsx      # Session status banner
-│   ├── ActionBar.tsx       # Stop / Reset when active; DeskQ sync strip when idle
-│   ├── DeskQSyncStrip.tsx  # Passive DeskQ waiting indicator (Option B)
+│   ├── animations/         # Mascots and decorative motion (playful mode)
+│   ├── IPhoneShell.tsx     # iPhone frame, toasts, overlays, shortcuts
+│   ├── SessionStatusRow.tsx# Unified status, phase stepper, DeskQ sync
+│   ├── TimerPanel.tsx      # SVG progress ring + elapsed time
 │   ├── StatsBar.tsx        # Interval, countdown, next-in, cycle %
+│   ├── DeskQHealthPanel.tsx# DeskQ connection, sync, agent paths (settings)
 │   ├── BreakHub.tsx        # Games & wellness drawer
+│   ├── BreakFocusOverlay.tsx # Full-screen break timer
+│   ├── SettingsPanel.tsx   # Timer, DeskQ, keep-alive, alerts, appearance
 │   ├── CountdownOverlay.tsx# Browser-only alert overlay
 │   └── ...
 │
 ├── context/
-│   └── TrackerContext.tsx  # Global timer state provider
+│   ├── TrackerContext.tsx  # Global timer state provider
+│   └── AppSettingsContext.tsx # User preferences (focus mode, sounds, etc.)
 │
 ├── hooks/
-│   ├── useTrackerTimer.ts  # Timer logic (browser + Electron bridge)
-│   └── useElectronBridge.ts# Electron-only helpers (tray, always-on-top)
+│   └── useTrackerTimer.ts  # Timer logic (browser + Electron bridge)
+│
+├── lib/
+│   ├── timeFormat.ts       # Shared mm:ss, elapsed, relative time formatters
+│   ├── appSettings.ts      # Settings schema + persistence
+│   ├── sessionHistory.ts   # Session event log
+│   └── ...
 │
 ├── types/
 │   ├── tracker.ts          # Timer types and constants
 │   └── electron.d.ts       # window.electronAPI typings
 │
 ├── config/
-│   └── timer.json          # COUNTDOWN_START, ALERT_INTERVAL_MINUTES
+│   ├── timer.json          # COUNTDOWN_START, ALERT_INTERVAL_MINUTES
+│   └── server.json         # PORT, APP_URL (shared by Next.js + Electron)
 │
 ├── desktop/                # Electron main process
 │   ├── main.cjs            # App entry, window, IPC, stealth
@@ -124,16 +133,6 @@ tracker-alert/
 ├── .env.example            # Environment variable template
 └── package.json            # Scripts, dependencies, electron-builder config
 ```
-
-### Orphan files (not used at runtime)
-
-These files at the project root are **compiled artifacts from DeskQ Agent** and are **not imported** by DeskFlow:
-
-- `trackingManager.js`
-- `sessionManager.js`
-- `screenshotPaths.js`
-
-They can be ignored or removed; the active timer logic lives in `desktop/timer-service.cjs` and `hooks/useTrackerTimer.ts`.
 
 ---
 
@@ -158,10 +157,10 @@ They can be ignored or removed; the active timer logic lives in `desktop/timer-s
 ┌─────────▼─────────────────────────────────────────────────────────┐
 │                     Next.js Renderer (React)                       │
 │  TrackerProvider → useTrackerTimer → UI Components                 │
-│  (IPhoneShell, TimerPanel, StatusCard, BreakHub, ...)            │
+│  (IPhoneShell, SessionStatusRow, TimerPanel, BreakHub, ...)      │
 └───────────────────────────────────────────────────────────────────┘
           ▲
-          │ HTTP (localhost:3000)
+          │ HTTP (localhost:4000)
           │
 ┌─────────┴─────────┐
 │  DeskQ Agent      │  ← SQLite queue.db, screenshots/, heartbeats
@@ -315,7 +314,7 @@ Edit `.env.local` as needed (see [Configuration](#configuration)). For most loca
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:4000](http://localhost:4000).
 
 - Timer runs in the browser via `localStorage` persistence
 - No DeskQ integration
@@ -329,7 +328,7 @@ npm run electron:dev
 
 This runs:
 
-1. `next dev` on port 3000
+1. `next dev` on port 4000
 2. Waits for the server, then launches Electron loading `ELECTRON_APP_URL`
 
 Electron features enabled: main-process timer, DeskQ sync, system overlay, tray, stealth mode.
@@ -364,12 +363,23 @@ Central timer constants (shared by TypeScript and Electron):
 
 Imported in `types/tracker.ts` as `ALERT_INTERVAL_SECONDS` and `COUNTDOWN_START`.
 
+### `config/server.json`
+
+Single source for dev server port and URL (read by Electron main/overlay):
+
+```json
+{
+  "PORT": 4000,
+  "APP_URL": "http://localhost:4000"
+}
+```
+
 ### Environment variables (`.env.local`)
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `PORT` | `3000` | Next.js dev server port |
-| `ELECTRON_APP_URL` | `http://localhost:3000` | URL Electron loads |
+| `PORT` | `4000` | Next.js dev server port |
+| `ELECTRON_APP_URL` | `http://localhost:4000` | URL Electron loads |
 | `DESQ_LOG_PATH` | — | Enable log-file watcher mode |
 | `DESQ_AGENT_DB_PATH` | auto-discover | Override DeskQ SQLite path |
 | `DESQ_MATCH_PATTERNS` | screenshot, desq, deskq | Extra log patterns (comma-separated regex) |
@@ -401,11 +411,27 @@ The entire app is rendered inside an **iPhone 15 Pro–style frame** (393×852 p
 
 | Section | Component | Description |
 |---|---|---|
-| Status | `StatusCard` | Running / Waiting / Alert / Awaiting DeskQ |
-| Dev tools | `TestCountdownButton` | Preview countdown (dev only) |
-| Timer | `TimerPanel` | Circular progress ring + elapsed time |
-| Metrics | `StatsBar` | Interval, countdown length, next alert, cycle % |
-| Actions | `ActionBar` | Stop + Reset when active; `DeskQSyncStrip` when idle |
+| Mismatch | `IntervalMismatchBanner` | Warns when DeskQ interval ≠ 11 min |
+| Status | `SessionStatusRow` | Phase stepper, DeskQ sync, session controls |
+| Timer | `TimerPanel` | SVG progress ring + elapsed time |
+| Metrics | `StatsBar` | Interval, countdown length, next alert, cycle % (inside timer panel) |
+
+Settings (dock) opens `SettingsPanel` with sections: Timer → DeskQ → Keep-alive → Alerts → Appearance → Advanced. DeskQ health and manual sync live under **DeskQ**.
+
+### Focus vs playful mode
+
+Default is **focus mode** (`playfulMode: false`). `VisualModeEffect` toggles `visual-focus-mode` on `<html>` to hide mascots and use the professional office palette. Toggle in Settings → Appearance.
+
+### Professional UI extras
+
+| Feature | Component / file | Role |
+|---|---|---|
+| Activity toasts | `ActivityToasts` | Sync, screenshot, keep-alive feedback |
+| Cycle summary | `CycleSummaryToast` | End-of-cycle recap |
+| Daily stats | `DailyStatsPanel` | Session history summary |
+| Keyboard shortcuts | `KeyboardShortcuts` | Global hotkeys (Electron) |
+| Onboarding | `OnboardingWizard` | First-run setup |
+| Accessibility | `AccessibilityBanner` | Reduced-motion / a11y hints |
 
 ### Keep alive (Electron only)
 
@@ -554,8 +580,8 @@ Available only when `NODE_ENV === "development"`:
 
 | Tool | Location | Action |
 |---|---|---|
-| Preview Countdown | `TestCountdownButton` | Triggers 3→1 alert immediately |
-| Simulate Screenshot | `TestCountdownButton` | Calls `electronAPI.simulateScreenshot()` when awaiting DeskQ |
+| Preview Countdown | `PreviewCountdown` (dock) | Triggers 3→1 alert immediately |
+| Simulate Screenshot | `PreviewCountdown` / dev tools | Calls `electronAPI.simulateScreenshot()` when awaiting DeskQ |
 
 ---
 
@@ -589,6 +615,8 @@ Build config is in `package.json` under the `"build"` key. Product name: **DeskF
 | `desktop/services/background-service.cjs` | DeskQ event orchestration |
 | `desktop/services/deskq-agent-watcher.cjs` | DeskQ SQLite/filesystem watcher |
 | `config/timer.json` | 11-min interval & 3s countdown config |
+| `config/server.json` | Dev port & APP_URL for Electron |
+| `lib/timeFormat.ts` | Shared time formatting utilities |
 | `types/tracker.ts` | Shared timer types |
 | `types/electron.d.ts` | Electron API types |
 | `.env.example` | Environment variable template |
@@ -620,4 +648,4 @@ npm run dev
 
 ---
 
-*Last updated: June 2025 — DeskFlow v0.1.0*
+*Last updated: June 2025 — DeskFlow v0.1.0 (port 4000, focus-mode UI)*

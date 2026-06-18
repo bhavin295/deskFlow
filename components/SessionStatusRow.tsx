@@ -12,6 +12,7 @@ import {
 import StatusBuddy from "@/components/animations/StatusBuddy";
 import { getDeskqConnectionState } from "@/lib/deskqConnection";
 import { recordSessionEvent } from "@/lib/sessionHistory";
+import { formatCaptureTime, formatShortClock } from "@/lib/timeFormat";
 import type { StatusLabel } from "@/types/tracker";
 import type { ComponentType } from "react";
 
@@ -38,21 +39,6 @@ const DESKQ_LINE_LABELS = {
   linked: "DeskQ linked",
   tracking: "DeskQ tracking",
 } as const;
-
-function formatTime(totalSeconds: number): string {
-  const m = Math.floor(totalSeconds / 60);
-  const s = totalSeconds % 60;
-  return `${m}:${s.toString().padStart(2, "0")}`;
-}
-
-function formatScreenshotTime(iso: string | null | undefined): string | null {
-  if (!iso) return null;
-  try {
-    return new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-  } catch {
-    return null;
-  }
-}
 
 function getPhase(
   state: string,
@@ -97,7 +83,7 @@ export default function SessionStatusRow() {
   const activePhaseIndex = phaseIndex(phase);
   const Icon = STATUS_ICONS[statusLabel];
   const isElectron = typeof window !== "undefined" && Boolean(window.electronAPI?.syncDeskq);
-  const lastShot = formatScreenshotTime(deskqStatus?.lastScreenshotAt);
+  const lastShot = formatCaptureTime(deskqStatus?.lastScreenshotAt);
 
   useEffect(() => {
     if (prevAwaiting.current && !awaitingScreenshot && state === "running") {
@@ -218,7 +204,7 @@ export default function SessionStatusRow() {
                 <span className="session-status-sep" aria-hidden>
                   ·
                 </span>
-                <span className="session-status-timer">{formatTime(nextAlertSeconds)} to alert</span>
+                <span className="session-status-timer">{formatShortClock(nextAlertSeconds)} to alert</span>
               </>
             )}
           </p>

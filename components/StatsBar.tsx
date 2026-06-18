@@ -2,14 +2,9 @@
 
 import StatsCheerBuddy from "@/components/animations/StatsCheerBuddy";
 import { METRIC_BADGE_SHAPES, METRIC_BADGE_TONES, METRIC_ICONS } from "@/components/svg/MetricIcons";
+import { formatMmSs } from "@/lib/timeFormat";
 import { useTracker } from "@/context/TrackerContext";
 import { useAppSettings } from "@/context/AppSettingsContext";
-
-function formatTime(totalSeconds: number): string {
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-}
 
 function formatInterval(minutes: number): string {
   return `${minutes.toString().padStart(2, "0")}:00`;
@@ -33,7 +28,7 @@ export default function StatsBar({ embedded = false }: StatsBarProps) {
   const metricValues = {
     interval: formatInterval(settings.alertIntervalMinutes),
     alert: `${countdownStart}s`,
-    next: formatTime(nextAlertSeconds),
+    next: formatMmSs(nextAlertSeconds),
     cycle: `${cyclePct}%`,
   } as const;
 

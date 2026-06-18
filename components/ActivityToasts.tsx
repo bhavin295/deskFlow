@@ -46,10 +46,3 @@ export default function ActivityToasts() {
     </div>
   );
 }
-
-export function pushActivityToast(message: string, tone: ToastItem["tone"] = "ok") {
-  if (typeof window === "undefined") return;
-  window.dispatchEvent(
-    new CustomEvent("deskflow-activity-toast", { detail: { message, tone } }),
-  );
-}

@@ -1,5 +1,6 @@
 const path = require("node:path");
 const { BrowserWindow, screen } = require("electron");
+const serverConfig = require(path.join(__dirname, "..", "config", "server.json"));
 
 let overlayWindow = null;
 
@@ -33,7 +34,7 @@ function createOverlayWindow() {
   overlayWindow.setIgnoreMouseEvents(true, { forward: true });
   overlayWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   overlayWindow.setAlwaysOnTop(true, "floating");
-  const appUrl = process.env.ELECTRON_APP_URL || "http://localhost:4000";
+  const appUrl = process.env.ELECTRON_APP_URL || serverConfig.APP_URL;
   overlayWindow.loadURL(`${appUrl}/overlay`);
   overlayWindow.hide();
 

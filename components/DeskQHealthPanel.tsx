@@ -1,9 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { DESKQ_CONNECTION_LABELS, getDeskqConnectionState } from "@/lib/deskqConnection";
 import { recordSessionEvent } from "@/lib/sessionHistory";
+import { formatCaptureTime, formatRelativeTime } from "@/lib/timeFormat";
 import { useTracker } from "@/context/TrackerContext";
+
+function shortPath(path: string | null | undefined): string {
+  if (!path) return "Not found";
+  const parts = path.split(/[/\\]/);
+  return parts[parts.length - 1] || path;
+}
 
 const LAST_SYNC_KEY = "deskflow-last-deskq-sync";
 
@@ -12,39 +19,6 @@ type LastSync = {
   ok: boolean;
   message: string;
 };
-
-function formatRelativeTime(iso: string | null | undefined): string {
-  if (!iso) return "Never";
-  const timestamp = new Date(iso).getTime();
-  if (!Number.isFinite(timestamp)) return "Unknown";
-  const diffMs = Date.now() - timestamp;
-  if (diffMs < 60_000) return "Just now";
-  const minutes = Math.floor(diffMs / 60_000);
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  return new Date(iso).toLocaleString([], {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
-
-function formatCaptureTime(iso: string | null | undefined): string {
-  if (!iso) return "No capture yet";
-  try {
-    return new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-  } catch {
-    return "Unknown";
-  }
-}
-
-function shortPath(path: string | null | undefined): string {
-  if (!path) return "Not found";
-  const parts = path.split(/[/\\]/);
-  return parts[parts.length - 1] || path;
-}
 
 function loadLastSync(): LastSync | null {
   if (typeof window === "undefined") return null;
@@ -63,16 +37,12 @@ function saveLastSync(sync: LastSync) {
 export default function DeskQHealthPanel() {
   const { deskqStatus } = useTracker();
   const [syncing, setSyncing] = useState(false);
-  const [lastSync, setLastSync] = useState<LastSync | null>(null);
+  const [lastSync, setLastSync] = useState<LastSync | null>(() => loadLastSync());
   const isElectron = typeof window !== "undefined" && Boolean(window.electronAPI?.syncDeskq);
   const connection = getDeskqConnectionState(deskqStatus);
   const agentPath = deskqStatus?.agentDbPath ?? deskqStatus?.logPath ?? null;
   const userDir = deskqStatus?.agentUserDir ?? null;
   const trackingActive = Boolean(deskqStatus?.deskqTrackingActive);
-
-  useEffect(() => {
-    setLastSync(loadLastSync());
-  }, []);
 
   const handleSync = useCallback(async () => {
     const api = window.electronAPI;
@@ -114,7 +84,7 @@ export default function DeskQHealthPanel() {
       </div>
 
       <p className="deskq-health-row">
-        Last capture: <strong>{formatCaptureTime(deskqStatus?.lastScreenshotAt)}</strong>
+        Last capture: <strong>{formatCaptureTime(deskqStatus?.lastScreenshotAt) ?? "No capture yet"}</strong>
       </p>
 
       {lastSync && (
