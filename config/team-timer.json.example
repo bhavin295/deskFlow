@@ -1,0 +1,5 @@
+{
+  "ALERT_INTERVAL_MINUTES": 11,
+  "COUNTDOWN_START": 3,
+  "LABEL": "Office policy (11 min)"
+}

@@ -1,0 +1,79 @@
+/* Semantic text colors — light & dark */
+:root {
+  --text-primary: #0f172a;
+  --text-secondary: #1e293b;
+  --text-muted: #334155;
+  --text-subtle: #475569;
+  --text-inverse: #f8fafc;
+
+  --text-status-running: #047857;
+  --text-status-waiting: #b45309;
+  --text-status-deskq: #1d4ed8;
+  --text-status-alert: #dc2626;
+
+  --text-timer-label: #4338ca;
+  --text-timer-sub: #475569;
+  --text-timer-idle: #0f172a;
+}
+
+.dark {
+  --text-primary: #f8fafc;
+  --text-secondary: #e2e8f0;
+  --text-muted: #cbd5e1;
+  --text-subtle: #94a3b8;
+  --text-inverse: #0f172a;
+
+  --text-status-running: #a7f3d0;
+  --text-status-waiting: #fde68a;
+  --text-status-deskq: #bfdbfe;
+  --text-status-alert: #fecaca;
+
+  --text-timer-label: #a5f3fc;
+  --text-timer-sub: #e2e8f0;
+  --text-timer-idle: #f8fafc;
+}
+
+/* Shared typography utilities */
+.text-ui-primary {
+  color: var(--text-primary);
+}
+
+.text-ui-secondary {
+  color: var(--text-secondary);
+}
+
+.text-ui-muted {
+  color: var(--text-muted);
+}
+
+.text-ui-subtle {
+  color: var(--text-subtle);
+}
+
+/* Settings & modals */
+.settings-header h2,
+.session-summary-title {
+  color: var(--text-primary);
+}
+
+.settings-row,
+.settings-toggle {
+  color: var(--text-secondary);
+}
+
+.settings-note {
+  color: var(--text-muted);
+}
+
+.settings-close {
+  color: var(--text-subtle);
+}
+
+.session-summary-eyebrow,
+.session-summary-label {
+  color: var(--text-muted);
+}
+
+.preview-countdown-overlay {
+  z-index: 46;
+}

@@ -1,0 +1,41 @@
+/* Reduced motion — accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .timer-sonar,
+  .timer-orbit,
+  .timer-ring-shimmer,
+  .timer-ring-live,
+  .status-awaiting-progress-bar,
+  .dev-countdown-chip-funky::before,
+  .dock-panel-funky::before,
+  .keep-alive-btn-funky.keep-alive-btn-on::before,
+  .status-icon-funky,
+  .status-title-funky,
+  .app-brand-funky .app-brand-icon,
+  .app-brand-funky .app-brand-title,
+  .app-brand-funky .brand-mascot,
+  .timer-stage-funky.timer-stage-idle,
+  .timer-stage-funky::before,
+  .timer-stage-funky::after,
+  .timer-ring-funky::after,
+  .timer-ring-shimmer-playful,
+  .timer-stage-playful,
+  .timer-orbit-reverse,
+  .metrics-value-funky.metrics-value-live,
+  .fashion-frame-funky::after,
+  .deskq-sync-pulse,
+  .animate-stagger-in,
+  .animate-stat-pop,
+  .animate-timer-tick,
+  .animate-pulse-soft {
+    animation: none !important;
+  }
+}

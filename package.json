@@ -2,11 +2,17 @@
   "name": "tracker-alert",
   "version": "0.1.0",
   "private": true,
+  "main": "desktop/main.cjs",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 4000",
     "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "start": "next start -p 4000",
+    "lint": "eslint",
+    "icons:build": "node scripts/build-icons.cjs",
+    "electron": "cross-env ELECTRON_RUN_AS_NODE= ELECTRON_APP_URL=http://localhost:4000 electron .",
+    "preelectron": "node scripts/build-icons.cjs",
+    "electron:dev": "npm run icons:build && concurrently -k \"next dev -p 4000\" \"wait-on http://localhost:4000 && npm run electron\"",
+    "electron:build": "next build && electron-builder"
   },
   "dependencies": {
     "next": "16.2.9",
@@ -18,9 +24,46 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "concurrently": "^9.2.1",
+    "cross-env": "^7.0.3",
+    "electron": "^34.2.0",
+    "electron-builder": "^25.1.8",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
+    "sharp": "^0.35.1",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wait-on": "^8.0.5"
+  },
+  "build": {
+    "appId": "com.tracker.alert",
+    "productName": "DeskFlow",
+    "files": [
+      "desktop/**/*",
+      "config/**/*",
+      ".next/**/*",
+      "public/**/*",
+      "package.json",
+      "next.config.ts"
+    ],
+    "directories": {
+      "output": "dist-electron"
+    },
+    "icon": "public/deskflow-logo.png",
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "public/deskflow-logo.png",
+      "extendInfo": {
+        "NSAppleEventsUsageDescription": "DeskFlow uses Automation to reset idle time and prevent DeskQ from auto-stopping your session."
+      },
+      "target": [
+        "dmg"
+      ]
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    }
   }
 }

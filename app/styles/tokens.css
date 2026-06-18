@@ -1,0 +1,77 @@
+/* Design tokens — unified accent palette */
+:root {
+  --accent-pink: #f472b6;
+  --accent-violet: #a855f7;
+  --accent-indigo: #6366f1;
+  --accent-cyan: #06b6d4;
+  --accent-emerald: #34d399;
+  --accent-amber: #f59e0b;
+  --accent-blue: #3b82f6;
+  --surface: rgba(255, 255, 255, 0.94);
+  --surface-elevated: #ffffff;
+  --surface-card: rgba(255, 255, 255, 0.97);
+  --border-subtle: rgba(71, 85, 105, 0.24);
+  --border-strong: rgba(51, 65, 85, 0.16);
+
+  /* Cartoon palette — richer on light backgrounds */
+  --toon-cloud-body: #64748b;
+  --toon-cloud-bubble: #94a3b8;
+  --toon-cloud-highlight: #cbd5e1;
+  --toon-cloud-z: #4338ca;
+  --toon-cloud-z-dim: #6366f1;
+  --toon-cloud-eye: #334155;
+  --toon-cloud-mouth: #475569;
+
+  --toon-cat-body: #475569;
+  --toon-cat-highlight: #64748b;
+  --toon-cat-belly: #cbd5e1;
+  --toon-cat-ear-inner: #fb7185;
+  --toon-cat-limb: #334155;
+
+  --toon-moon-body: #6366f1;
+  --toon-moon-face: #312e81;
+
+  --toon-gear-body: #6366f1;
+  --toon-gear-inner: #a5b4fc;
+  --toon-gear-spoke: #4f46e5;
+
+  --toon-chick-z: #a16207;
+  --toon-chick-z-dim: #ca8a04;
+}
+
+.dark {
+  --accent-pink: #f472b6;
+  --accent-violet: #c084fc;
+  --accent-indigo: #818cf8;
+  --accent-cyan: #22d3ee;
+  --accent-emerald: #34d399;
+  --accent-amber: #fbbf24;
+  --accent-blue: #60a5fa;
+  --surface: rgba(30, 41, 59, 0.68);
+  --surface-elevated: rgba(51, 65, 85, 0.58);
+  --border-subtle: rgba(148, 163, 184, 0.2);
+
+  --toon-cloud-body: #e2e8f0;
+  --toon-cloud-bubble: #f1f5f9;
+  --toon-cloud-highlight: #f8fafc;
+  --toon-cloud-z: #94a3b8;
+  --toon-cloud-z-dim: #cbd5e1;
+  --toon-cloud-eye: #64748b;
+  --toon-cloud-mouth: #64748b;
+
+  --toon-cat-body: #6b7c9e;
+  --toon-cat-highlight: #8fa3c4;
+  --toon-cat-belly: #e2e8f0;
+  --toon-cat-ear-inner: #fda4af;
+  --toon-cat-limb: #556987;
+
+  --toon-moon-body: #a5b4fc;
+  --toon-moon-face: #312e81;
+
+  --toon-gear-body: #818cf8;
+  --toon-gear-inner: #c7d2fe;
+  --toon-gear-spoke: #6366f1;
+
+  --toon-chick-z: #ca8a04;
+  --toon-chick-z-dim: #eab308;
+}

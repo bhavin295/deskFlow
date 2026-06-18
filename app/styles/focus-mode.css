@@ -1,0 +1,78 @@
+/* Focus mode — calmer UI when playful visuals are off */
+
+html.visual-focus-mode .fashion-frame-playful,
+html.visual-focus-mode .app-brand-playful,
+html.visual-focus-mode .timer-stage-playful,
+html.visual-focus-mode .session-status-playful,
+html.visual-focus-mode .dock-slot-playful,
+html.visual-focus-mode .dock-theme-playful,
+html.visual-focus-mode .stats-cheer-playful,
+html.visual-focus-mode .bg-floaters,
+html.visual-focus-mode .ambient-peeks {
+  display: none !important;
+}
+
+html.visual-focus-mode .fashion-frame-funky::after,
+html.visual-focus-mode .timer-stage-funky::before,
+html.visual-focus-mode .timer-stage-funky::after,
+html.visual-focus-mode .timer-ring-funky::after,
+html.visual-focus-mode .timer-ring-shimmer-playful,
+html.visual-focus-mode .dock-panel-funky::before,
+html.visual-focus-mode .keep-alive-btn-funky.keep-alive-btn-on::before,
+html.visual-focus-mode .status-banner-funky::before,
+html.visual-focus-mode .metrics-strip-funky::before,
+html.visual-focus-mode .animated-bg-funky::after,
+html.visual-focus-mode .app-sections-funky::before {
+  display: none !important;
+}
+
+html.visual-focus-mode .timer-stage-funky.timer-stage-idle,
+html.visual-focus-mode .app-brand-funky .app-brand-icon,
+html.visual-focus-mode .status-icon-funky,
+html.visual-focus-mode .status-title-funky,
+html.visual-focus-mode .metrics-value-funky.metrics-value-live,
+html.visual-focus-mode .timer-orbit-reverse,
+html.visual-focus-mode .keep-alive-btn-funky.keep-alive-btn-on .keep-alive-icon-on {
+  animation: none !important;
+}
+
+html.visual-focus-mode .dock-panel-funky .dock-slot:hover:not(:disabled),
+html.visual-focus-mode .dock-panel-funky .dock-slot:hover:not(:disabled) .dock-btn-bubble {
+  transform: none !important;
+}
+
+html.visual-focus-mode .timer-display-funky,
+html.visual-focus-mode .status-title-funky,
+html.visual-focus-mode .metrics-value-funky.metrics-value-live {
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  color: inherit !important;
+}
+
+html.visual-focus-mode .timer-ring-funky {
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.15) !important;
+}
+
+html.visual-focus-mode .dock-btn-bubble-games,
+html.visual-focus-mode .dock-btn-bubble-wellness {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+  box-shadow: none !important;
+}
+
+html.visual-focus-mode.dark .dock-btn-bubble-games,
+html.visual-focus-mode.dark .dock-btn-bubble-wellness {
+  background: rgba(51, 65, 85, 0.85) !important;
+  color: #e2e8f0 !important;
+}
+
+html.visual-focus-mode .dock-panel {
+  border-color: rgba(148, 163, 184, 0.28) !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06) !important;
+}
+
+html.visual-focus-mode.dark .dock-panel {
+  background: rgba(30, 41, 59, 0.78) !important;
+}
